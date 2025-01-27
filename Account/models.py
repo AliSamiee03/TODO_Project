@@ -1,6 +1,11 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import RegexValidator
 
+phone_validator = RegexValidator(
+    regex=r'^(09)\d{9}$',
+    message='The phone number is not valid. The phone number must start with 09 and contain 11 digits.'
+)
 
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -41,6 +46,7 @@ class User(AbstractBaseUser):
         max_length=15,
         null=True,
         blank=True,
+        validators=[phone_validator],
         verbose_name="شماره تلفن"
     )
 
