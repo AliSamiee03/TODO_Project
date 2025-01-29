@@ -20,11 +20,11 @@ class DetailTask(APIView):
 
     def get(self, request, pk):
         task = Task.objects.get(pk=pk)
+        self.check_object_permissions(request, task)
         serializer_data = TaskSerializer(instance=task)
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
 class CreateTask(APIView):
-    permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
 
     def post(self, request):
         serializer_data = TaskSerializer(data=request.data)
@@ -39,6 +39,7 @@ class UpdateTask(APIView):
 
     def put(self, request, pk):
         task = Task.objects.get(pk=pk)
+        self.check_object_permissions(request, task)
         serializer_data = TaskSerializer(instance=task, data=request.data, partial=True)
         if serializer_data.is_valid():
             serializer_data.save()
@@ -51,5 +52,6 @@ class DeleteTask(APIView):
 
     def delete(self, request, pk):
         task = Task.objects.get(pk=pk)
+        self.check_object_permissions(request, task)
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
