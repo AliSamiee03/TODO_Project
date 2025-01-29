@@ -8,3 +8,12 @@ class IsOwnerOrAdmin(BasePermission):
             return True
 
         return obj == request.user
+
+class IsOwnerTaskOrAdmin(BasePermission):
+    message = 'You are not the owner of the task.'
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+
+        return obj.creator == request.user
