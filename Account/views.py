@@ -6,6 +6,10 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from permissions import IsOwnerOrAdmin
 class CreateUserView(APIView):
+    """
+    Create a new user
+    """
+    serializer_class = UserSerializer
 
     def post(self, request):
         serializer_data = UserSerializer(data=request.data)
@@ -18,7 +22,11 @@ class CreateUserView(APIView):
 
 
 class ListUsersView(APIView):
+    """
+    View to list all users
+    """
     permission_classes = [IsAdminUser, IsAuthenticated]
+    serializer_class = UserSerializer
 
     def get(self, request):
         users = User.objects.all()
@@ -26,7 +34,11 @@ class ListUsersView(APIView):
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
 class DetailUserView(APIView):
+    """
+    View a user's information
+    """
     permission_classes = [IsOwnerOrAdmin, IsAuthenticated]
+    serializer_class = UserSerializer
 
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
@@ -35,7 +47,12 @@ class DetailUserView(APIView):
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
 class UpdateUserView(APIView):
+    """
+    Updates the user
+    """
+
     permission_classes = [IsOwnerOrAdmin, IsAuthenticated]
+    serializer_class = UserSerializer
 
     def put(self, request, pk):
         user = User.objects.get(pk=pk)
@@ -47,6 +64,9 @@ class UpdateUserView(APIView):
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteUserView(APIView):
+    """
+    Delete user
+    """
     permission_classes = [IsOwnerOrAdmin, IsAuthenticated]
 
     def delete(self, request, pk):

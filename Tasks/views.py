@@ -10,7 +10,12 @@ from django.utils.dateparse import parse_date
 from django.db.models import Q
 
 class ShowAllTasksView(APIView):
+    """
+    Show tasks of all users
+    """
+
     permission_classes = [IsAuthenticated, IsAdminUser]
+    serializer_class = TaskSerializer
     def get(self, request):
         tasks = Task.objects.all()
 
@@ -31,7 +36,11 @@ class ShowAllTasksView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ListTasks(APIView):
+    """
+    Show all the tasks of the logged in user
+    """
     permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
+    serializer_class = TaskSerializer
 
     def get(self, request):
         tasks = Task.objects.filter(creator=request.user)
@@ -51,7 +60,11 @@ class ListTasks(APIView):
 
 
 class DetailTask(APIView):
+    """
+    Show details of a task
+    """
     permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
+    serializer_class = TaskSerializer
 
     def get(self, request, pk):
         task = Task.objects.get(pk=pk)
@@ -60,6 +73,10 @@ class DetailTask(APIView):
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
 class CreateTask(APIView):
+    """
+    Create a new task
+    """
+    serializer_class = TaskSerializer
 
     def post(self, request):
         serializer_data = TaskSerializer(data=request.data)
@@ -70,7 +87,11 @@ class CreateTask(APIView):
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateTask(APIView):
+    """
+    Update a task
+    """
     permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
+    serializer_class = TaskSerializer
 
     def put(self, request, pk):
         task = Task.objects.get(pk=pk)
@@ -83,6 +104,9 @@ class UpdateTask(APIView):
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteTask(APIView):
+    """
+    Delete a task
+    """
     permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
 
     def delete(self, request, pk):
@@ -93,7 +117,11 @@ class DeleteTask(APIView):
 
 
 class SearchTaskView(APIView):
+    """
+    Search task by title or description
+    """
     permission_classes = [IsAuthenticated]
+    serializer_class = TaskSerializer
 
     def get(self, request):
         searched_word = request.query_params.get('search')
