@@ -6,8 +6,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
         extra_kwargs = {
-            'password': {'write_only': True, 'min_length': 5, 'max_length': 20},
+            'password': {'write_only': True, 'max_length': 20},
             'email': {'required': True},
             'username': {'required': True},
             'phone': {'required': True},
         }
+
+    def create(self, validated_data):
+        validated_data['is_active'] = True
+        return super().create(validated_data)

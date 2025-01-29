@@ -5,6 +5,7 @@ urlpatterns = [
     path('list_users/', views.ListUsersView.as_view(), name='list_users'),
     path('create_user/', views.CreateUserView.as_view(), name='create_user'),
     path('update_user/<int:pk>/', views.UpdateUserView.as_view(), name='update_user'),
+    path('detail_user/<int:pk>/', views.DetailUserView.as_view(), name='detail_user'),
     path('delete_user/<int:pk>/', views.DeleteUserView.as_view(), name='delete_user'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
