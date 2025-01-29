@@ -6,11 +6,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from permissions import IsOwnerTaskOrAdmin
 
-class ListTasks(APIView):
-    permission_classes = [IsAdminUser, IsAuthenticated]
 
+class ShowAllTasksView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request):
         tasks = Task.objects.all()
+        serializer = TaskSerializer(instance=True, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class ListTasks(APIView):
+    permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
+
+    def get(self, request):
+        tasks = Task.objects.filter(creator=request.user)
         serializer_data = TaskSerializer(instance=tasks, many=True)
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
@@ -29,7 +36,7 @@ class CreateTask(APIView):
     def post(self, request):
         serializer_data = TaskSerializer(data=request.data)
         if serializer_data.is_valid():
-            serializer_data.save()
+            serializer_data.save(creator=request.user)
             return Response(serializer_data.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
