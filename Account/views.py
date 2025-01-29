@@ -15,6 +15,8 @@ class CreateUserView(APIView):
             user.save()
             return Response(serializer_data.data, status=status.HTTP_201_CREATED)
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ListUsersView(APIView):
     permission_classes = [IsAdminUser, IsAuthenticated]
 

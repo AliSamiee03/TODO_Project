@@ -6,19 +6,50 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from permissions import IsOwnerTaskOrAdmin
 from django.utils.timezone import now
+from django.utils.dateparse import parse_date
 
 
 class ShowAllTasksView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request):
         tasks = Task.objects.all()
+
+        due_date = request.query_params.get('due_date')
+        created_at = request.query_params.get('created_at')
+
+        if due_date:
+            due_date = parse_date(due_date)
+            if due_date:
+                tasks = tasks.filter(due_date=due_date)
+
+        if created_at:
+            created_at = parse_date(created_at)
+            if created_at:
+                tasks = tasks.filter(created_at__date=created_at)
+
         serializer = TaskSerializer(instance=True, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ListTasks(APIView):
     permission_classes = [IsAuthenticated, IsOwnerTaskOrAdmin]
 
     def get(self, request):
         tasks = Task.objects.filter(creator=request.user)
+
+
+        due_date = request.query_params.get('due_date')
+        created_at = request.query_params.get('created_at')
+
+        if due_date:
+            due_date = parse_date(due_date)
+            if due_date:
+                tasks = tasks.filter(due_date=due_date)
+
+        if created_at:
+            created_at = parse_date(created_at)
+            if created_at:
+                tasks = tasks.filter(created_at__date=created_at)
+
         serializer_data = TaskSerializer(instance=tasks, many=True)
         return Response(serializer_data.data, status=status.HTTP_200_OK)
 
