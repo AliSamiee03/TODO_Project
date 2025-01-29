@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from permissions import IsOwnerTaskOrAdmin
+from django.utils.timezone import now
 
 
 class ShowAllTasksView(APIView):
@@ -49,7 +50,7 @@ class UpdateTask(APIView):
         self.check_object_permissions(request, task)
         serializer_data = TaskSerializer(instance=task, data=request.data, partial=True)
         if serializer_data.is_valid():
-            serializer_data.save()
+            serializer_data.save(updated_at=now())
             return Response(serializer_data.data, status=status.HTTP_200_OK)
 
         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
