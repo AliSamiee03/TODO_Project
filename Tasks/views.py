@@ -40,15 +40,11 @@ class ListTasks(APIView):
         due_date = request.query_params.get('due_date')
         created_at = request.query_params.get('created_at')
 
-        if due_date:
-            due_date = parse_date(due_date)
-            if due_date:
-                tasks = tasks.filter(due_date=due_date)
+        if due_date == 'true':
+            tasks = tasks.order_by('due_date')
 
-        if created_at:
-            created_at = parse_date(created_at)
-            if created_at:
-                tasks = tasks.filter(created_at__date=created_at)
+        if created_at == 'true':
+            tasks = tasks.order_by('created_at')
 
         serializer_data = TaskSerializer(instance=tasks, many=True)
         return Response(serializer_data.data, status=status.HTTP_200_OK)
