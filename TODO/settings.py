@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     #external apps
     'Account',
     'Tasks',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
