@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from permissions import IsOwnerTaskOrAdmin
 from django.utils.timezone import now
 from django.utils.dateparse import parse_date
-
+from django.db.models import Q
 
 class ShowAllTasksView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
@@ -90,3 +90,19 @@ class DeleteTask(APIView):
         self.check_object_permissions(request, task)
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SearchTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        searched_word = request.query_params.get('search')
+        print(searched_word)
+        if searched_word:
+            tasks = Task.objects.filter(
+                Q(title__icontains=searched_word) | Q(description__icontains=searched_word), creator=request.user
+            )
+            self.check_object_permissions(request, tasks)
+            serializer_data = TaskSerializer(tasks, many=True)
+            return Response(serializer_data.data, status=status.HTTP_200_OK)
+        return Response({"detail": "Query parameter 'search' is required."}, status=status.HTTP_400_BAD_REQUEST)
